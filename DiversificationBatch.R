@@ -1,44 +1,23 @@
 #You can use code you wrote for the correlation exercise here.
-source("DiscreteFunctions.R")
+source("DiversificationFunctions.R")
 tree <- read.tree("____PATH_TO_TREE_OR_SOME_OTHER_WAY_OF_GETTING_A_TREE____")
-discrete.data <- read.csv(file="____PATH_TO_DATA_OR_SOME_OTHER_WAY_OF_GETTING_TRAITS____", stringsAsFactors=FALSE) #death to factors.
 
-cleaned.discrete <- CleanData(tree, discrete.data)
+#First, let's look at a sister group comparison. Imagine you have one clade you think is especially noteworthy. 
 
-VisualizeData(tree, cleaned.discrete)
+ntax.focal.clade <- ___________________
+ntax.sister.clade <- __________________
+depth.both <- ____________ #time of the MRCA
+actual.ratio <- min(c(ntax.focal.clade, ntax.sister.clade)) / max(c(ntax.focal.clade, ntax.sister.clade))
 
-#First, let's use parsimony to look at ancestral states
-cleaned.discrete.phyDat <- phyDat(cleaned.discrete, type="______________") #phyDat is a data format used by phangorn
-anc.p <- ancestral.pars(tree, cleaned.discrete.phyDat)
-plotAnc(tree, anc.p, 1)
+estimated.div.rate <- log(ntax.focal.clade + ntax.sister.clade)/depth.both #N(t) = N0 * exp(r*t)
 
-#Do you see any uncertainty? What does that meean for parsimony?
+nsim <- 1000
+sim.ratios <- rep(NA, nsim)
+for (i in sequence(nsim)) {
+	left.clade <- sim.bd(b=estimated.div.rate, times=depth.both)[2,2] #get the number of taxa. We're assuming a pure birth model. This is dumb: if there's one thing we know about life, it's that extinction happens. But it's convenient for this case. This is known as a Yule model.
+	right.clade <- sim.bd(b=estimated.div.rate, times=depth.both)[2,2] 
+	sim.ratios[i] <- min(c(left.clade, right.clade)) / max(c(left.clade, right.clade))
+}
 
-#now plot the likelihood reconstruction
-anc.ml <- ancestral.pml(pml(tree, cleaned.discrete.phyDat), type="ml")
-plotAnc(tree, anc.ml, 1)
-
-#How does this differ from parsimony? 
-#Why does it differ from parsimony?
-#What does uncertainty mean?
-
-#How many changes are there in your trait under parsimony? 
-parsimony.score <- ____some_function_____(tree, cleanded.discrete.phyDat)
-print(parsimony.score)
-
-#Can you estimate the number of changes under a likelihood-based model? 
-
-#Well, we could look at branches where the reconstructed state changed from one end to the other. But that's not really a great approach: at best, it will underestimate the number of changes (we could have a change on a branch, then a change back, for example). A better approach is to use stochastic character mapping.
-
-estimated.histories <- make.simmap(tree, cleaned.discrete, model="ARD", nsim=5)
-
-#always look to see if it seems reasonable
-plotSimmap(estimated.histories)
-
-counts <- countSimmap(estimated.histories)
-print(counts)
-
-#Depending on your biological question, investigate additional approaches:
-#  As in the correlation week, where hypotheses were examined by constraining rate matrices, one can constrain rates to examine hypotheses. corHMM, ape, and other packages have ways to address this.
-#  Rates change over time, and this could be relevant to a biological question: have rates sped up post KT, for example. Look at the models in geiger for ways to do this.
-#  You might observe rates for one trait but it could be affected by some other trait: you only evolve wings once on land, for example. corHMM can help investigate this.
+plot(hist(sim.ratios, breaks=20))
+abline(v=actual.ratio)
