@@ -11,13 +11,28 @@ actual.ratio <- min(c(ntax.focal.clade, ntax.sister.clade)) / max(c(ntax.focal.c
 
 estimated.div.rate <- log(ntax.focal.clade + ntax.sister.clade)/depth.both #N(t) = N0 * exp(r*t)
 
-nsim <- 1000
+nsim <- 10000
 sim.ratios <- rep(NA, nsim)
 for (i in sequence(nsim)) {
 	left.clade <- sim.bd(b=estimated.div.rate, times=depth.both)[2,2] #get the number of taxa. We're assuming a pure birth model. This is dumb: if there's one thing we know about life, it's that extinction happens. But it's convenient for this case. This is known as a Yule model.
 	right.clade <- sim.bd(b=estimated.div.rate, times=depth.both)[2,2] 
 	sim.ratios[i] <- min(c(left.clade, right.clade)) / max(c(left.clade, right.clade))
+	if(i%%500==0) {
+		print(paste("Now", 100*i/nsim, "percent done"))	
+	}
 }
 
-plot(hist(sim.ratios, breaks=20))
-abline(v=actual.ratio)
+hist(sim.ratios, breaks=100, col="black", main=paste("Fraction of simulations with more disparity is", ecdf(sim.ratios)(actual.ratio)))
+abline(v=actual.ratio, col="red")
+
+#So, what does this mean about your observed result? What's the p-value?
+
+#Now, try fitting different models for diversification.
+tree.branching <- getBtimes(string=write.tree(tree))
+bd.result <- bd(tree.branching)
+yule.result <- pureBirth(tree.branching)
+ddl.result <- DDL(tree.branching)
+
+best.model <- _____________________________
+
+#What are the parameters of the best model? What do you think they mean?
