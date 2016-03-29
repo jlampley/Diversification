@@ -28,11 +28,14 @@ abline(v=actual.ratio, col="red")
 #So, what does this mean about your observed result? What's the p-value?
 
 #Now, try fitting different models for diversification.
-tree.branching <- getBtimes(string=write.tree(tree))
-bd.result <- bd(tree.branching)
-yule.result <- pureBirth(tree.branching)
-ddl.result <- DDL(tree.branching)
+div.results <- TryMultipleDivModels(tree)
 
-best.model <- _____________________________
+best.model <- __________________
 
-#What are the parameters of the best model? What do you think they mean?
+# What are the parameters of the best model? What do you think they mean?
+
+
+_____________________________________
+
+# Now try running BAMM. Use the tutorial at http://bamm-project.org/quickstart.html to do diversification analyses.
+
