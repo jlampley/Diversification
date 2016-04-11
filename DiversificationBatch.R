@@ -32,6 +32,8 @@ hist(sim.ratios, breaks=100, col="black", main=paste("Fraction of simulations wi
 abline(v=actual.ratio, col="red")
 
 #So, what does this mean about your observed result? What's the p-value?
+#Fraction of simulations with more disparity is 0.4634.  This is my p-value.  The 
+#two clades are not significantly different in diversification rates.
 
 #Now, try fitting different models for diversification.
 div.results <- TryMultipleDivModels(tree)
@@ -39,9 +41,12 @@ div.results <- TryMultipleDivModels(tree)
 best.model <- div.results[[which(div.results[[5]]==0)]]
 
 # What are the parameters of the best model? What do you think they mean?
+#The birth-death model worked the best.  The parameters were: log-likelihood @ the max
+# was 16.32, r1 the net diversification rate was 1.36x10^-8, 'a' the extinction 
+#fraction is 1, and the Akaike information criterion is -28.64 (the lower this 
+#number the better the model.)
 
 
-_____________________________________
 
-# Now try running BAMM. Use the tutorial at http://bamm-project.org/quickstart.html to do diversification analyses.
+#Now try running BAMM. Use the tutorial at http://bamm-project.org/quickstart.html to do diversification analyses.
 
